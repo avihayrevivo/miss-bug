@@ -9,21 +9,8 @@ export const bugService = {
 }
 
 function query(filterBy) {
-    return axios.get(BASE_URL)
+    return axios.get(BASE_URL, { params: filterBy })
         .then(res => res.data)
-        .then(bugs => {
-
-            if (filterBy.txt) {
-                const regExp = new RegExp(filterBy.txt, 'i')
-                bugs = bugs.filter(bug => regExp.test(bug.title))
-            }
-
-            if (filterBy.minSeverity) {
-                bugs = bugs.filter(bug => bug.severity >= filterBy.minSeverity)
-            }
-
-            return bugs
-        })
 }
 
 function getById(bugId) {
@@ -31,22 +18,15 @@ function getById(bugId) {
 }
 
 function remove(bugId) {
-    return axios.get(`${BASE_URL}${bugId}/remove`).then(res => res.data)
+    return axios.delete(`${BASE_URL}${bugId}`).then(res => res.data)
 }
 
 function save(bug) {
-    let url = BASE_URL + 'save'
-    let queryParams = `?title=${bug.title}&description=${bug.description}&severity=${bug.severity}`
-    if (bug._id) queryParams += `&_id=${bug._id}`
-
-    return axios.get(url + queryParams)
-    .then(res => res.data)
-    .catch(err => {
-        console.log('err: ', err)
-    })
+    if (bug._id) return axios.put(BASE_URL + bug._id, bug).then(res => res.data)
+    return axios.post(BASE_URL, bug).then(res => res.data)
 }
 
 
 function getDefaultFilter() {
-    return { txt: '', minSeverity: 0 }
+    return { txt: '', minSeverity: 0, pageIdx: 0, sortBy: { type: '', dir: 1 } }
 }

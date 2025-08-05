@@ -11,11 +11,11 @@ export function BugFilter({ filterBy, onSetFilterBy }) {
     function handleChange({ target }) {
         const field = target.name
         let value = target.value
-
+        
         switch (target.type) {
             case 'number':
-            case 'range':
-                value = +value || ''
+                case 'range':
+                    value = +value || ''
                 break
 
             case 'checkbox':
@@ -25,8 +25,13 @@ export function BugFilter({ filterBy, onSetFilterBy }) {
             default:
                 break
         }
-
+        
         setFilterByToEdit(prevFilter => ({ ...prevFilter, [field]: value }))
+    }
+    
+    function handleChangeSort({ target }){
+        let value = target.value
+         setFilterByToEdit(prevFilter => ({ ...prevFilter, sortBy: {...prevFilter.sortBy , type: value}}))
     }
 
     function onSubmitFilter(ev) {
@@ -44,6 +49,12 @@ export function BugFilter({ filterBy, onSetFilterBy }) {
 
                 <label htmlFor="minSeverity">Min Severity: </label>
                 <input value={minSeverity} onChange={handleChange} type="number" placeholder="By Min Severity" id="minSeverity" name="minSeverity" />
+
+                <select name="sortingBy" onChange={handleChangeSort}>
+                    <option value="">Sort By...</option>
+                    <option name="title" value="title">Title</option>
+                    <option name="severity" value="severity">Severity</option>
+                </select>
             </form>
         </section>
     )

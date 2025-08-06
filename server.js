@@ -1,13 +1,17 @@
+import path from 'path'
 import express from 'express'
 import cookieParser from 'cookie-parser'
 
 import { bugService } from './services/bug.service.js'
 import { loggerService } from './services/logger.service.js'
+import { authService } from './services/auth.service.js'
+import { userService } from './services/user.service.js'
 
 const app = express()
 
 app.use(express.static('public'))
 app.use(cookieParser())
+app.use(express.json())
 
 app.get('/api/bug', (req, res) => {
     // console.log(req.query);
@@ -82,10 +86,38 @@ app.delete('/api/bug/:bugId', (req, res) => {
         })
 })
 
+app.post('/api/auth/login', (req, res) => {
+    const credentials = req.body
+    
+    authService.checkLogin(credentials)
+        .then(user => {
+            const loginToken = authService.getLoginToken(user)
+            res.cookie('loginToken', loginToken)
+            res.send(user)
+        })
+        .catch(() => res.status(404).send('Invalid Credentials'))
+})
+
+app.post('/api/auth/signup', (req, res) => {
+    const credentials = req.body
+    
+    userService.add(credentials)
+        .then(user => {
+            if (user) {
+                const loginToken = authService.getLoginToken(user)
+                res.cookie('loginToken', loginToken)
+                res.send(user)
+            } else {
+                res.status(400).send('Cannot signup')
+            }
+        })
+        .catch(err => res.status(400).send('Username taken.'))
+})
+
 app.get('/*all', (req, res) => {
     res.sendFile(path.resolve('public/index.html'))
 })
 
-const port = 3030
+const port = 3031
 app.get('/', (req, res) => res.send('Hello there'))
 app.listen(port, () => console.log(`Server listening on port http://127.0.0.1:${port}/`)) 

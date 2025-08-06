@@ -1,5 +1,10 @@
 [
     {
+        "severity": null,
+        "createdAt": 1754485829734,
+        "_id": "t0daU"
+    },
+    {
         "_id": "abc123",
         "title": "Cannot create a new bug",
         "description": "problem when clicking create",

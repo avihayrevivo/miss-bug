@@ -114,6 +114,11 @@ app.post('/api/auth/signup', (req, res) => {
         .catch(err => res.status(400).send('Username taken.'))
 })
 
+app.post('/api/auth/logout', (req, res) => {
+    res.clearCookie('loginToken')
+    res.send('logged-out!')
+})
+
 app.get('/*all', (req, res) => {
     res.sendFile(path.resolve('public/index.html'))
 })

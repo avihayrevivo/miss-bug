@@ -10,16 +10,18 @@ app.use(express.static('public'))
 app.use(cookieParser())
 
 app.get('/api/bug', (req, res) => {
-    
+    // console.log(req.query);
+
     const filterBy = {
         txt: req.query.txt || '',
         minSeverity: +req.query.minSeverity || 0,
-        pageIdx: req.query.pageIdx || 0,
-        sortBy: req.query.sortBy || {type: '', dir: 1}
+        pageIdx: +req.query.pageIdx || 0,
+        type: req.query.type || '',
+        dir: +req.query.dir || 1
     }
-    console.log(filterBy);
-    
-    
+
+    // console.log(filterBy);
+
     bugService.query(filterBy)
         .then(bugs => res.send(bugs))
         .catch(err => {
@@ -78,6 +80,10 @@ app.delete('/api/bug/:bugId', (req, res) => {
             loggerService.error('Cannot remove bug', err)
             res.status(500).send('Cannot remove bug')
         })
+})
+
+app.get('/*all', (req, res) => {
+    res.sendFile(path.resolve('public/index.html'))
 })
 
 const port = 3030

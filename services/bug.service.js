@@ -13,7 +13,7 @@ export const bugService = {
 
 function query(filterBy) {
     let bugs = [...gBugs]
-
+    
     if (filterBy.txt) {
         const regex = new RegExp(filterBy.txt, 'i')
         bugs = bugs.filter(bug => regex.test(bug.title))
@@ -21,21 +21,19 @@ function query(filterBy) {
     if (filterBy.minSeverity) {
         bugs = bugs.filter(bug => bug.severity >= filterBy.minSeverity)
     }
-    if (filterBy.pageIdx) {
+    const totalPages = Math.ceil(bugs.length / PAGE_SIZE) - 1
+    if (filterBy.pageIdx !== null) {
         const startIdx = filterBy.pageIdx * PAGE_SIZE
         bugs = bugs.slice(startIdx, startIdx + PAGE_SIZE)
     }
-    if (filterBy.sortBy.title) {
-        bugs = bugs.sort((a, b) => a.title.localeCompare(b.title))
+    if (filterBy.type === 'title') {
+        bugs = bugs.sort((a, b) => (a.title.localeCompare(b.title)) * filterBy.dir)
     }
-    if (filterBy.sortBy.severity) {
-        bugs = bugs.sort((a, b) => {
-            return severityOrder[b.severity] - severityOrder[a.severity]
-        })
+    if (filterBy.type === 'severity') {
+        bugs = bugs.sort((a, b) => (b.severity - a.severity) * filterBy.dir)
     }
-    console.log(bugs);
-    
-    return Promise.resolve(bugs)
+
+    return Promise.resolve({bugs, totalPages})
 }
 
 function getById(bugId) {

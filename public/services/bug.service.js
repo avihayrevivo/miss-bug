@@ -28,5 +28,5 @@ function save(bug) {
 
 
 function getDefaultFilter() {
-    return { txt: '', minSeverity: 0, pageIdx: 0, sortBy: { type: '', dir: 1 } }
+    return { txt: '', minSeverity: 0, pageIdx: 0, type: '', dir: 1 }
 }

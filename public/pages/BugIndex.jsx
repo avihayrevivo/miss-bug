@@ -7,14 +7,22 @@ import { BugFilter } from '../cmps/BugFilter.jsx'
 import { BugList } from '../cmps/BugList.jsx'
 
 export function BugIndex() {
-    const [bugs, setBugs] = useState(null)
+    const [bugs, setBugs] = useState([])
+    const [totalPageCount, setTotalPageCount] = useState(null)
     const [filterBy, setFilterBy] = useState(bugService.getDefaultFilter())
+    console.log(filterBy);
+
 
     useEffect(loadBugs, [filterBy])
 
     function loadBugs() {
         bugService.query(filterBy)
-            .then(setBugs)
+            .then(({ bugs, totalPages }) => {
+                console.log(filterBy);
+
+                setBugs(bugs)
+                setTotalPageCount(totalPages)
+            })
             .catch(err => showErrorMsg(`Couldn't load bugs - ${err}`))
     }
 
@@ -65,6 +73,7 @@ export function BugIndex() {
         setFilterBy(prevFilter => {
             let nextPageIdx = prevFilter.pageIdx + diff
             if (nextPageIdx < 0) nextPageIdx = 0
+            if (nextPageIdx > totalPageCount) nextPageIdx = totalPageCount
             return { ...prevFilter, pageIdx: nextPageIdx }
         })
     }

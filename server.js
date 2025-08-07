@@ -12,6 +12,7 @@ const app = express()
 app.use(express.static('public'))
 app.use(cookieParser())
 app.use(express.json())
+app.set('query parser', 'express')
 
 app.get('/api/bug', (req, res) => {
     // console.log(req.query);
